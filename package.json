@@ -1,0 +1,18 @@
+{
+  "name": "xsselector",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "selenium-webdriver": "^4.0.0-beta.1"
+  },
+  "dependencies": {}
+}
