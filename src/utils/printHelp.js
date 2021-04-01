@@ -16,7 +16,9 @@ function getFormattedValueText(arg) {
 }
 
 function printHelp() {
-    console.log('Usage: node ./index.js [options]');
+    console.log('');
+    console.log('Usage: node ./src/index.js [options]');
+    console.log('DO NOT USE npm run, because start args do not work in then!!!!!');
     console.log('');
 
     const maxLongNameLength = Math.max(...argTypes.map(arg => getFormattedNamesText(arg).length));

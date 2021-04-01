@@ -58,49 +58,49 @@ const argTypes = [
         shortName: 'c',
         longName: argNames.COOKIES,
         defaultValue: 'string',
-        description: 'cookies to use.',
+        description: 'cookies to use. (not implemented yet)',
         // TODO: implement cookie usage
     }),
     new Arg({
         longName: argNames.PARAMS,
         defaultValue: false,
-        description: 'search for parameters.',
+        description: 'search for parameters. (not implemented yet)',
         // TODO: implement search for parameters
     }),
     new Arg({
         longName: argNames.CRAWL,
         defaultValue: false,
-        description: 'search for more urls to check.',
+        description: 'search for more urls to check. (not implemented yet)',
         // TODO: implement search for more urls to check
     }),
     new Arg({
         longName: argNames.CRAWL_DEPTH,
         defaultValue: 8,
-        description: 'maximum depth to crawl.',
+        description: 'maximum depth to crawl. (not implemented yet)',
         // TODO: implement maximum depth to crawl
     }),
     new Arg({
         longName: argNames.GENERATE_SEARCH_KEY,
         defaultValue: false,
-        description: 'generate a search key and not use the one from config.',
+        description: 'generate a search key and not use the one from config. (not implemented yet)',
         // TODO: implement generate a search key and not use the one from config
     }),
     new Arg({
         longName: argNames.SHOW_BROWSER,
         defaultValue: false,
-        description: 'show browser window.',
+        description: 'show browser window. (not implemented yet)',
         // TODO: implement (not) showing browser
     }),
     new Arg({
         longName: argNames.DETECTING_RETRIES,
         defaultValue: 3,
-        description: 'how often to wait for xss to occur.',
+        description: 'how often to wait for xss to occur. (not implemented yet)',
         // TODO: implement how often to wait for xss to occur
     }),
     new Arg({
         longName: argNames.DETECTING_RETRY_DELAY,
         defaultValue: 500,
-        description: 'how long to wait between tries for xss to occur.',
+        description: 'how long to wait between tries for xss to occur. (not implemented yet)',
         // TODO: implement how long to wait between tries for xss to occur
     }),
     new Arg({
