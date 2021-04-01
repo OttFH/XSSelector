@@ -42,7 +42,6 @@ async function main() {
                 driver = await new Builder().forBrowser('firefox').build();
             }
             try {
-                console.log('main0:', checkUrl.generate(config.searchKey));
                 await driver.get(checkUrl.generate(config.searchKey));
                 await driver.wait(until.elementLocated(By.tagName('body')), 10000)
                 await sleep(1000);
@@ -55,7 +54,6 @@ async function main() {
                     if (await promise && !params.allPayloads) {
                         return true;
                     }
-                    console.log('main3:', checkUrl.generate(payload.payload));
                     await driver.get(checkUrl.generate(payload.payload));
                     await driver.wait(until.elementLocated(By.tagName('body')), 10000);
 

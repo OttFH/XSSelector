@@ -37,7 +37,6 @@ async function loadCommandLineArgs() {
     handleArgName(grouped, argNames.URLS, args => params.urls.push(...args));
     await handleArgName(grouped, argNames.URLS_FILE, args => Promise.all(args.map(path => {
         return new Promise(((resolve, reject) => fs.readFile(path, 'utf-8', (err, data) => {
-            console.log()
             if (err) {
                 return reject(err);
             }
