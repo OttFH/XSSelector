@@ -3,6 +3,7 @@ const logLevels = require('../logging/logLevels');
 const {argNames, argTypes, getArgType} = require('./argTypes');
 const generateDefaultParams = require("./generateDefaultParams");
 const params = require("./parameters");
+const fs = require('fs');
 
 function clear() {
     Object.keys(params).forEach(key => {
@@ -35,9 +36,14 @@ async function loadCommandLineArgs() {
     handleArgName(grouped, argNames.HELP, () => params.help = true);
     handleArgName(grouped, argNames.URLS, args => params.urls.push(...args));
     await handleArgName(grouped, argNames.URLS_FILE, args => Promise.all(args.map(path => {
-        // TODO: read urls file
-        logger.warn('reading urls from file is not implemented yet');
-        return Promise.resolve();
+        return new Promise(((resolve, reject) => fs.readFile(path, 'utf-8', (err, data) => {
+            console.log()
+            if (err) {
+                return reject(err);
+            }
+            params.urls.push(...data.split(/\r?\n/).filter(Boolean));
+            return resolve();
+        })));
     })));
     handleArgName(grouped, argNames.ALL_PARAMS, () => params.allParams = true);
     handleArgName(grouped, argNames.ALL_PAYLOADS, () => params.allPayloads = true);
