@@ -1,4 +1,6 @@
-const searchFunctionCode = (function (key) {
+const {callFunctionCode} = require('../utils');
+
+const searchFunction = (key) => {
     let result = {
         reflections: [],
         logs: [],
@@ -112,10 +114,10 @@ const searchFunctionCode = (function (key) {
 
     find(document);
     return result;
-}).toString().split('\n').map(line => line.trim()).join(' ');
+};
 
 function getSearchReflectionCode(key) {
-    return `return ${searchFunctionCode}('${key.split("'").join("\\'")}');`;
+    return callFunctionCode(searchFunction, key);
 }
 
 module.exports = getSearchReflectionCode;

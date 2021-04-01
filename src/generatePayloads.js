@@ -1,4 +1,5 @@
 const config = require('./config');
+const {callFunctionCode} = require('./utils');
 
 const reflectionTypes = {
     HTML_TAG: 'html_tag',
@@ -19,19 +20,19 @@ function generateRandomClass(length = 6) {
     return `${config.payloadClassPrefix}${Math.random().toString().slice(-length)}`;
 }
 
-const clickElementWithClassCode = (function (className) {
+const clickElementWithClass = className => {
     let elements = document.getElementsByClassName(className);
     for (let i = 0; i < elements.length; i++) {
         elements.item(i).click();
     }
     return elements.length;
-}).toString().split('\n').map(line => line.trim()).join(' ');
+};
 
 function getTriggerCodeForClass(className) {
-    return `return (${clickElementWithClassCode})("${className}")`;
+    return callFunctionCode(clickElementWithClass, className);
 }
 
-const triggerElementWithCodeCode = (function (code) {
+const triggerElementWithCode = code => {
     let found = false;
     let logs = [];
 
@@ -87,10 +88,10 @@ const triggerElementWithCodeCode = (function (code) {
         log('info', 'did not found code.');
     }
     return logs;
-}).toString().split('\n').map(line => line.trim()).join(' ');
+}
 
 function getTriggerCodeForCode(jsCode) {
-    return `return (${triggerElementWithCodeCode})("${jsCode}")`;
+    return callFunctionCode(triggerElementWithCode, jsCode);
 }
 
 function generatePayloadCode(reflection) {
