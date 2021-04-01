@@ -22,6 +22,7 @@ function printHelp() {
     const maxLongNameLength = Math.max(...argTypes.map(arg => getFormattedNamesText(arg).length));
     console.log('Options:');
     argTypes.forEach(arg => {
+        // TODO: implement descriptions being longer than a line
         console.log(getFormattedNamesText(arg).padEnd(maxLongNameLength, ' ') + arg.description);
 
         const formattedValueText = getFormattedValueText(arg);

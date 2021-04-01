@@ -33,7 +33,7 @@ function handleArgName(groupedArgs, name, handler) {
 
 async function loadCommandLineArgs() {
     const grouped = getGroupedArgs();
-    handleArgName(grouped, argNames.HELP, () => params.help = true);
+    handleArgName(grouped, argNames.HELP, () => params.help = true); // TODO: handle false values
     handleArgName(grouped, argNames.URLS, args => params.urls.push(...args));
     await handleArgName(grouped, argNames.URLS_FILE, args => Promise.all(args.map(path => {
         return new Promise(((resolve, reject) => fs.readFile(path, 'utf-8', (err, data) => {
@@ -45,10 +45,10 @@ async function loadCommandLineArgs() {
             return resolve();
         })));
     })));
-    handleArgName(grouped, argNames.ALL_PARAMS, () => params.allParams = true);
-    handleArgName(grouped, argNames.ALL_PAYLOADS, () => params.allPayloads = true);
+    handleArgName(grouped, argNames.ALL_PARAMS, () => params.allParams = true); // TODO: handle false values
+    handleArgName(grouped, argNames.ALL_PAYLOADS, () => params.allPayloads = true); // TODO: handle false values
     handleArgName(grouped, argNames.COOKIES, args => params.cookies.push(...args));
-    handleArgName(grouped, argNames.PARAMS, () => params.searchParams = true);
+    handleArgName(grouped, argNames.PARAMS, () => params.searchParams = true); // TODO: handle false values
     handleArgName(grouped, argNames.CRAWL, () => params.crawlDepth = getArgType(argNames.CRAWL_DEPTH).defaultValue);
     handleArgName(grouped, argNames.CRAWL_DEPTH, args => {
         if (args.length >= 1) {
