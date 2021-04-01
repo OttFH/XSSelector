@@ -5,8 +5,9 @@ const {sleep} = require("./utils");
 const {loadCommandLineArgs} = require('./args/handleParameters');
 const logger = require('./logging/logger');
 const getSearchReflectionCode = require('./browser/getSearchReflectionCode');
-const generatePayloads = require("./generatePayloads");
-const generateUrlCombinations = require("./generateUrlCombinations");
+const generatePayloads = require('./generatePayloads');
+const generateUrlCombinations = require('./generateUrlCombinations');
+const printHelp = require('./utils/printHelp');
 
 const searchForReflectionsCode = getSearchReflectionCode(config.searchKey);
 
@@ -14,8 +15,7 @@ async function main() {
     await loadCommandLineArgs();
 
     if (params.help) {
-        // TODO: print out manual
-        console.log('help');
+        printHelp();
         return;
     }
 

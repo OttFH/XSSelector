@@ -1,7 +1,7 @@
 const Arg = require('./arg');
 const logLevels = require('../logging/logLevels');
 
-const loggingOptions = Object.keys(logLevels).map(level => level.toLowerCase()).join();
+const loggingOptions = Object.keys(logLevels).map(level => level.toLowerCase()).join(', ');
 
 const argNames = {
     HELP: 'help',
@@ -55,7 +55,7 @@ const argTypes = [
     }),
     new Arg({
         longName: argNames.PARAMS,
-        defaultValue: true,
+        defaultValue: false,
         description: 'search for parameters.'
     }),
     new Arg({
