@@ -3,7 +3,7 @@ const {argTypes} = require('../args/argTypes');
 function getFormattedNamesText(arg) {
     const names = [
         arg.shortName ? `-${arg.shortName}` : null,
-        arg.longName ? `-${arg.longName}` : null,
+        arg.longName ? `--${arg.longName}` : null,
     ].filter(Boolean);
     return `  ${names.join(', ')}    `;
 }
