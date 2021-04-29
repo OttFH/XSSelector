@@ -5,7 +5,7 @@ const {sleep} = require("./utils");
 const {loadCommandLineArgs} = require('./args/handleParameters');
 const logger = require('./logging/logger');
 const getSearchReflectionCode = require('./browser/getSearchReflectionCode');
-const generatePayloads = require('./generatePayloads');
+const generatePayloads = require('./payloads/generatePayloads');
 const generateUrlCombinations = require('./generateUrlCombinations');
 const printHelp = require('./utils/printHelp');
 
