@@ -8,7 +8,7 @@ function generateDefaultParams() {
         urls: [],
         allParams: getArgType(argNames.ALL_PARAMS).defaultValue,
         allPayloads: getArgType(argNames.ALL_PAYLOADS).defaultValue,
-        cookies: null,
+        cookies: [],
         searchParams: getArgType(argNames.PARAMS).defaultValue,
         crawlDepth: getArgType(argNames.CRAWL).defaultValue ? getArgType(argNames.CRAWL_DEPTH).defaultValue : 0,
         logLevel: logLevels.WARN,

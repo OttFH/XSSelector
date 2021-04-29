@@ -10,7 +10,7 @@ const argNames = {
     CODE_MODE: 'code',
     ALL_PARAMS: 'all-params',
     ALL_PAYLOADS: 'all-payloads',
-    COOKIES: 'cookies',
+    COOKIE: 'cookie',
     PARAMS: 'params',
     CRAWL: 'crawl',
     CRAWL_DEPTH: 'crawl-depth',
@@ -56,10 +56,10 @@ const argTypes = [
     }),
     new Arg({
         shortName: 'c',
-        longName: argNames.COOKIES,
+        longName: argNames.COOKIE,
         defaultValue: 'string',
-        description: 'cookies to use. (not implemented yet)',
-        // TODO: implement cookie usage
+        description: 'a cookie to use. Use multiple times for multiple cookies. Format: --cookie "cookie-name" "cookie-value"',
+        isHierarchical: true
     }),
     new Arg({
         longName: argNames.PARAMS,

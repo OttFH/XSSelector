@@ -1,19 +1,26 @@
 const {logger} = require('../logging/logger');
 const logLevels = require('../logging/logLevels');
 const {argNames, argTypes, getArgType} = require('./argTypes');
-const generateDefaultParams = require("./generateDefaultParams");
+const generateDefaultParams = require('./generateDefaultParams');
 const fs = require('fs');
 
 function getGroupedArgs() {
     const args = {};
-    let currentArg = null;
+    let currentArgs = null;
     process.argv.forEach(arg => {
         const argType = argTypes.find(type => type.isArg(arg));
         if (argType) {
-            currentArg = argType.longName;
-            args[currentArg] = [];
-        } else if (args[currentArg]) {
-            args[currentArg].push(arg);
+            if (!args[argType.longName]) {
+                args[argType.longName] = [];
+            }
+            if (argType.isHierarchical) {
+                currentArgs = [];
+                args[argType.longName].push(currentArgs);
+            } else {
+                currentArgs = args[argType.longName];
+            }
+        } else if (currentArgs) {
+            currentArgs.push(arg);
         }
     });
     return args;
@@ -39,7 +46,15 @@ async function loadCommandLineArgs() {
     })));
     handleArgName(grouped, argNames.ALL_PARAMS, () => params.allParams = true); // TODO: handle false values
     handleArgName(grouped, argNames.ALL_PAYLOADS, () => params.allPayloads = true); // TODO: handle false values
-    handleArgName(grouped, argNames.COOKIES, args => params.cookies.push(...args));
+    handleArgName(grouped, argNames.COOKIE, args => params.cookies.push(...args.map(arg => {
+        if (arg.length !== 2) {
+            logger.warn(`${argNames.COOKIE} needs a two values, you provided: ${arg.length}`);
+        }
+        return arg.length >= 2 ? {
+            name: arg[0],
+            value: arg[1],
+        } : null;
+    }).filter(Boolean)));
     handleArgName(grouped, argNames.PARAMS, () => params.searchParams = true); // TODO: handle false values
     handleArgName(grouped, argNames.CRAWL, () => params.crawlDepth = getArgType(argNames.CRAWL_DEPTH).defaultValue);
     handleArgName(grouped, argNames.CRAWL_DEPTH, args => {
