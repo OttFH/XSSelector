@@ -11,6 +11,16 @@ const printHelp = require('./utils/printHelp');
 
 const searchForReflectionsCode = getSearchReflectionCode(config.searchKey);
 
+// TODO: create index.js in root
+// TODO: add cookies and other HTTP-Headers
+// TODO: add other HTTP methods
+// TODO: add code mode
+// TODO: make params not public
+// TODO: add Parameter selection
+// TODO: add more payloads
+// TODO: add crawl mode
+// TODO: update README
+
 async function main() {
     await loadCommandLineArgs();
 
