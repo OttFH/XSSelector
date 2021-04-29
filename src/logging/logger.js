@@ -52,7 +52,7 @@ class Logger {
 
     vuln(...values) {
         if (hasLoglevel(logLevels.VULN)) {
-            console.log('[vurn]', ...values);
+            console.log('[vuln]', ...values);
         }
     }
 }
