@@ -17,7 +17,7 @@ function getFormattedValueText(arg) {
 
 function printHelp() {
     console.log('');
-    console.log('Usage: node ./src/index.js [options]');
+    console.log('Usage: node ./src/main.js [options]');
     console.log('DO NOT USE npm run, because start args do not work in then!!!!!');
     console.log('');
 

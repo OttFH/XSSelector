@@ -5,9 +5,9 @@ This is xss detection tool with selenium. It is currently in a prototype stage.
 ## Usage
 Please note that not all features are implemented yet.
 ````
-D:\XSSelector> node ./src/index.js -h
+D:\XSSelector> node ./index.js -h
 
-Usage: node ./src/index.js [options]
+Usage: node ./index.js [options]
 DO NOT USE npm run, because start args do not work in then!!!!!
 
 Options:

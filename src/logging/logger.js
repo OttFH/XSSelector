@@ -1,5 +1,10 @@
-const params = require('../args/parameters');
 const logLevels = require('../logging/logLevels');
+
+let params = null;
+
+function setParams(parameter) {
+    params = parameter;
+}
 
 function hasLoglevel(level) {
     return (params.logLevel || 0) <= level;
@@ -59,4 +64,7 @@ class Logger {
 
 const instance = new Logger();
 
-module.exports = instance;
+module.exports = {
+    setParams,
+    logger: instance,
+};

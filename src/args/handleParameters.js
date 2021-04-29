@@ -1,16 +1,8 @@
-const logger = require('../logging/logger');
+const {logger} = require('../logging/logger');
 const logLevels = require('../logging/logLevels');
 const {argNames, argTypes, getArgType} = require('./argTypes');
 const generateDefaultParams = require("./generateDefaultParams");
-const params = require("./parameters");
 const fs = require('fs');
-
-function clear() {
-    Object.keys(params).forEach(key => {
-        delete params[key];
-    });
-    setParams(generateDefaultParams());
-}
 
 function getGroupedArgs() {
     const args = {};
@@ -32,6 +24,7 @@ function handleArgName(groupedArgs, name, handler) {
 }
 
 async function loadCommandLineArgs() {
+    const params = generateDefaultParams();
     const grouped = getGroupedArgs();
     handleArgName(grouped, argNames.HELP, () => params.help = true); // TODO: handle false values
     handleArgName(grouped, argNames.URLS, args => params.urls.push(...args));
@@ -70,16 +63,8 @@ async function loadCommandLineArgs() {
             logger.warn(`${argNames.LOG_LEVEL} needs a single value, you provided: ${args.length}`);
         }
     });
+
+    return params;
 }
 
-function setParams(newParams) {
-    Object.keys(newParams || {}).forEach(key => {
-        params[key] = newParams[key];
-    });
-}
-
-module.exports = {
-    clear,
-    loadCommandLineArgs,
-    setParams,
-};
+module.exports = loadCommandLineArgs;

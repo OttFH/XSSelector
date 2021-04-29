@@ -1,9 +1,7 @@
 const config = require('./config');
 const {Builder, By, until} = require('selenium-webdriver');
-const params = require('./args/parameters');
 const {sleep} = require("./utils");
-const {loadCommandLineArgs} = require('./args/handleParameters');
-const logger = require('./logging/logger');
+const {logger} = require('./logging/logger');
 const getSearchReflectionCode = require('./browser/getSearchReflectionCode');
 const generatePayloads = require('./payloads/generatePayloads');
 const generateUrlCombinations = require('./generateUrlCombinations');
@@ -11,19 +9,16 @@ const printHelp = require('./utils/printHelp');
 
 const searchForReflectionsCode = getSearchReflectionCode(config.searchKey);
 
-// TODO: create index.js in root
 // TODO: add cookies and other HTTP-Headers
 // TODO: add other HTTP methods
 // TODO: add code mode
-// TODO: make params not public
 // TODO: add Parameter selection
 // TODO: add more payloads
 // TODO: add crawl mode
 // TODO: update README
+// TODO: fix starting with npm
 
-async function main() {
-    await loadCommandLineArgs();
-
+async function main({params}) {
     if (params.help) {
         printHelp();
         return;
@@ -92,9 +87,4 @@ async function main() {
     }
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch(e => {
-        logger.error('unhandled exception:', e);
-        process.exit(1);
-    });
+module.exports = main;

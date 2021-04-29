@@ -2,10 +2,10 @@
   "name": "xsselector",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon node src/index.js"
+    "start": "node src/main.js",
+    "dev": "nodemon node src/main.js"
   },
   "keywords": [],
   "author": "",
