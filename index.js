@@ -1,11 +1,11 @@
 const loadCommandLineArgs = require('./src/args/handleParameters');
-const {setParams, logger} = require('./src/logging/logger');
+const {setLogLevel, logger} = require('./src/logging/logger');
 const main = require('./src/main');
 
 (async function () {
     const params = await loadCommandLineArgs();
 
-    setParams(params);
+    setLogLevel(params.logLevel);
 
     return main({
         params,

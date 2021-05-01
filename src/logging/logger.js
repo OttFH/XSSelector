@@ -1,13 +1,13 @@
 const logLevels = require('../logging/logLevels');
 
-let params = null;
+let logLevel = logLevels.WARN;
 
-function setParams(parameter) {
-    params = parameter;
+function setLogLevel(parameter) {
+    logLevel = parameter;
 }
 
 function hasLoglevel(level) {
-    return (params.logLevel || 0) <= level;
+    return (logLevel || 0) <= level;
 }
 
 class Logger {
@@ -65,6 +65,6 @@ class Logger {
 const instance = new Logger();
 
 module.exports = {
-    setParams,
+    setLogLevel,
     logger: instance,
 };
