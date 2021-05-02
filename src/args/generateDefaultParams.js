@@ -1,4 +1,4 @@
-const {argNames} = require('../constents');
+const {logLevels, argNames} = require('../constents');
 const {getArgType} = require('./argTypes');
 
 function generateDefaultParams() {
@@ -15,7 +15,7 @@ function generateDefaultParams() {
         searchParams: getArgType(argNames.PARAMS).defaultValue,
         crawlDepth: getArgType(argNames.CRAWL).defaultValue ? getArgType(argNames.CRAWL_DEPTH).defaultValue : 0,
         proxyPort: getArgType(argNames.INTERNAL_PROXY_PORT).defaultValue,
-        logLevel: getArgType(argNames.LOG_LEVEL).defaultValue,
+        logLevel: logLevels.WARN,
     };
 }
 

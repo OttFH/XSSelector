@@ -1,19 +1,8 @@
-function htmlTagPayloads({scriptTag, imgTag, aTag, pTag, tagTrigger, assert}) {
-    return [{
-        payload: scriptTag,
-        assert,
-    }, {
-        payload: imgTag,
-        assert,
-    }, {
-        payload: aTag,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: pTag,
-        trigger: tagTrigger,
-        assert,
-    }];
+function htmlTagPayloads({reflection, jsCode, tagClass, htmlElements}) {
+    return htmlElements.map(({tag, trigger}) => ({
+        payload: tag,
+        trigger,
+    }));
 }
 
 module.exports = htmlTagPayloads;

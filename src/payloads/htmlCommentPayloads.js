@@ -1,19 +1,8 @@
-function htmlCommentPayloads({scriptTag, imgTag, aTag, pTag,tagTrigger, assert}) {
-    return [{
-        payload: ` -->${scriptTag}<!-- `,
-        assert,
-    }, {
-        payload: ` -->${imgTag}<!-- `,
-        assert,
-    }, {
-        payload: ` -->${aTag}<!-- `,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: ` -->${pTag}<!-- `,
-        trigger: tagTrigger,
-        assert,
-    }];
+function htmlCommentPayloads({reflection, jsCode, tagClass, htmlElements}) {
+    return htmlElements.map(({tag, trigger}) => ({
+        payload: ` -->${tag}<!-- `,
+        trigger,
+    }));
 }
 
 module.exports = htmlCommentPayloads;

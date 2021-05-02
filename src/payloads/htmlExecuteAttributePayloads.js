@@ -1,43 +1,20 @@
-const {getTriggerCodeForCode} = require('./generators');
+const {getTriggerCodeForClass, getTriggerCodeForCode} = require('./generators');
+const htmlNormalAttributePayloads = require('./htmlNormalAttributePayloads');
 
-function htmlExecuteAttributePayloads({reflection, jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert}) {
-    return[{
-        payload: jsCode,
-        trigger: getTriggerCodeForCode(jsCode),
-        assert,
-    }, {
-        payload: `JAvaSCriPt:${jsCode}`,
-        trigger: getTriggerCodeForCode(`JAvaSCriPt:${jsCode}`),
-        assert,
-    }, {
-        payload: `">${scriptTag}`,
-        assert,
-    }, {
-        payload: `">${imgTag}`,
-        assert,
-    }, {
-        payload: `">${aTag}`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `">${pTag}`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `"></${reflection.parentName}>${scriptTag}<${reflection.parentName} ${reflection.nodeName}="`,
-        assert,
-    }, {
-        payload: `"></${reflection.parentName}>${imgTag}<${reflection.parentName} ${reflection.nodeName}="`,
-        assert,
-    }, {
-        payload: `"></${reflection.parentName}>${aTag}<${reflection.parentName} ${reflection.nodeName}="`,
-        trigger: tagTrigger,
-        assert,
-    }, {
-        payload: `"></${reflection.parentName}>${pTag}<${reflection.parentName} ${reflection.nodeName}="`,
-        trigger: tagTrigger,
-        assert,
-    }];
+function htmlExecuteAttributePayloads(data) {
+    const {reflection, jsCode, tagClass} = data;
+    const exitStrings = ['"', "'", ''];
+    return [
+        {
+            payload: jsCode,
+            trigger: getTriggerCodeForCode(jsCode),
+        },
+        ...exitStrings.map(exit => ({
+            payload: `${jsCode}${exit} class=${tagClass}/${exit}`,
+            trigger: getTriggerCodeForClass(tagClass, reflection.nodeName),
+        })),
+        ...htmlNormalAttributePayloads(data)
+    ];
 }
 
 module.exports = htmlExecuteAttributePayloads;

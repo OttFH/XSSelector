@@ -11,16 +11,16 @@ function generateRandomClass(length = 6) {
     return `${config.payloadClassPrefix}${Math.random().toString().slice(-length)}`;
 }
 
-const clickElementWithClass = className => {
+const triggerActionOnElementWithClass = (className, action) => {
     let elements = document.getElementsByClassName(className);
     for (let i = 0; i < elements.length; i++) {
-        elements.item(i).click();
+        elements.item(i)[action]();
     }
     return elements.length;
 };
 
-function getTriggerCodeForClass(className) {
-    return callFunctionCode(clickElementWithClass, className);
+function getTriggerCodeForClass(className, action) {
+    return callFunctionCode(triggerActionOnElementWithClass, className, action);
 }
 
 const triggerElementWithCode = code => {
@@ -85,7 +85,7 @@ function getTriggerCodeForCode(jsCode) {
     return callFunctionCode(triggerElementWithCode, jsCode);
 }
 
-module.exports={
+module.exports = {
     generateRandomJsKeySelector,
     generateRandomClass,
     getTriggerCodeForClass,
