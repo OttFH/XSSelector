@@ -29,18 +29,26 @@ async function request({driver, url}) {
     }
 }
 
-async function testPayload({driver, requestUrl, payload}) {
+async function testPayload({driver, params, requestUrl, payload}) {
     if (!await request({driver, url: requestUrl})) {
         return false;
     }
 
-    await sleep(200);
-    if (payload.trigger) {
-        const triggerResult = await driver.executeScript(payload.trigger);
-        logger.debug('trigger result:', triggerResult);
-    }
+    let assertResult;
+    const startMillis = Date.now();
+    do {
+        if (payload.trigger) {
+            await sleep(10);
+            const triggerResult = await driver.executeScript(payload.trigger);
+            logger.debug('trigger result:', triggerResult);
+        }
 
-    const assertResult = await driver.executeScript(payload.assert);
+        assertResult = await driver.executeScript(payload.assert);
+        if (assertResult) {
+            break;
+        }
+    } while (startMillis + params.detectionTimeout > Date.now()) ;
+
     if (assertResult) {
         logger.vuln('payload:', payload.payload);
     } else {
@@ -63,9 +71,17 @@ async function testUrl({driver, params, setProxyMods, combination}) {
         return false;
     }
 
-    await sleep(200);
-    const reflectionResult = await driver.executeScript(searchForReflectionsCode);
-    (reflectionResult.logs || []).forEach(logger.log);
+    let reflectionResult;
+    const startMillis = Date.now();
+    do {
+        await sleep(10);
+        reflectionResult = await driver.executeScript(searchForReflectionsCode);
+        (reflectionResult.logs || []).forEach(logger.log);
+
+        if (reflectionResult.reflections.length) {
+            break;
+        }
+    } while (startMillis + params.detectionTimeout > Date.now()) ;
 
     const payloads = generatePayloads(reflectionResult.reflections);
     logger.info('payloads generated:', payloads.length);
@@ -81,7 +97,7 @@ async function testUrl({driver, params, setProxyMods, combination}) {
         } = combination.generateRequest(payload.payload);
         setProxyMods(mods);
         await setCookies({driver, cookies: payloadCookies, requestUrl: payloadRequestUrl});
-        return testPayload({driver, requestUrl: payloadRequestUrl, payload});
+        return testPayload({driver, params, requestUrl: payloadRequestUrl, payload});
     }, Promise.resolve(false));
 }
 

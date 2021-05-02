@@ -24,8 +24,7 @@ const argNames = {
     LOG_LEVEL: 'log-level',
     GENERATE_SEARCH_KEY: 'gen-key',
     SHOW_BROWSER: 'show-browser',
-    DETECTING_RETRIES: 'retries',
-    DETECTING_RETRY_DELAY: 'retry-delay',
+    DETECTING_TIMEOUT: 'detection-timeout',
     INTERNAL_PROXY_PORT: 'internal-proxy-port',
 };
 

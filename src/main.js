@@ -4,7 +4,6 @@ const runner = require('./runner');
 const startProxy = require('./proxy');
 
 // TODO: add code mode
-// TODO: add more payloads
 // TODO: add crawl mode
 // TODO: update README
 // TODO: optimize combination testing (some may have been tested already)

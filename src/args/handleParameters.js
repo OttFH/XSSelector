@@ -92,6 +92,17 @@ async function loadCommandLineArgs() {
             logger.warn(`"${args[0]}" is not a valid value for ${argNames.CRAWL_DEPTH}, needs to be a integer.`);
         }
     });
+    handleArgName(grouped, argNames.DETECTING_TIMEOUT, args => {
+        if (args.length !== 1) {
+            logger.warn(`${argNames.DETECTING_TIMEOUT} needs a single value, you provided: ${args.length}`);
+        }
+        const timeout = parseInt(args[0], 10);
+        if (timeout) {
+            params.detectionTimeout = timeout;
+        } else if (args.length > 0) {
+            logger.warn(`"${args[0]}" is not a valid value for ${argNames.DETECTING_TIMEOUT}, needs to be a integer.`);
+        }
+    });
     handleArgName(grouped, argNames.INTERNAL_PROXY_PORT, args => {
         if (args.length !== 1) {
             logger.warn(`${argNames.INTERNAL_PROXY_PORT} needs a single value, you provided: ${args.length}`);

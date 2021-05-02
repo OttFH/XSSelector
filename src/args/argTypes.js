@@ -97,16 +97,9 @@ const argTypes = [
         // TODO: implement (not) showing browser
     }),
     new Arg({
-        longName: argNames.DETECTING_RETRIES,
-        defaultValue: 3,
-        description: 'how often to wait for xss to occur. (not implemented yet)',
-        // TODO: implement how often to wait for xss to occur
-    }),
-    new Arg({
-        longName: argNames.DETECTING_RETRY_DELAY,
-        defaultValue: 500,
-        description: 'how long to wait between tries for xss to occur. (not implemented yet)',
-        // TODO: implement how long to wait between tries for xss to occur
+        longName: argNames.DETECTING_TIMEOUT,
+        defaultValue: 200,
+        description: 'how long to wait in milliseconds for xss to occur.',
     }),
     new Arg({
         longName: argNames.INTERNAL_PROXY_PORT,
