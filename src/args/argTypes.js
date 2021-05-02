@@ -69,8 +69,7 @@ const argTypes = [
     new Arg({
         longName: argNames.PARAMS,
         defaultValue: false,
-        description: 'search for parameters. (not implemented yet)',
-        // TODO: implement search for parameters
+        description: 'search for query- and body parameters in DOM.',
     }),
     new Arg({
         longName: argNames.CRAWL,

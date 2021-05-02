@@ -1,7 +1,7 @@
-const {ifTruthy} = require('../utils');
+const {ifTruthy, deepClone} = require('../utils');
 
 class SearchParameterHandler {
-    constructor(source) {
+    static parse(source) {
         let searchParams = null;
         switch (typeof source) {
             case 'string':
@@ -13,24 +13,36 @@ class SearchParameterHandler {
                 break;
         }
 
-        this.params = searchParams ? [...searchParams].map(([key, value]) => ({
+        return new SearchParameterHandler(searchParams ? [...searchParams].map(([key, value]) => ({
             key,
             value,
-        })) : [];
+        })) : []);
+    }
+
+    constructor(params) {
+        this.params = params;
     }
 
     get length() {
         return this.params.length;
     }
 
+    containsKey(searchKey) {
+        return this.params.some(({key}) => key === searchKey);
+    }
+
+    add(key, value) {
+        return this.params.push({key, value}) - 1;
+    }
+
     generate() {
         return this.generateModified(null, null, false);
     }
 
-    generateModified(index, value, modify) {
+    generateModified(index, value, modify = true) {
         let params = this.params;
         if (modify) {
-            params = JSON.parse(JSON.stringify(params));
+            params = deepClone(params);
             if (params[index].value) {
                 params[index].value = encodeURIComponent(value);
             } else {
@@ -38,6 +50,10 @@ class SearchParameterHandler {
             }
         }
         return params.map(({key, value}) => `${key}${ifTruthy(value, '=')}`).join('&');
+    }
+
+    clone() {
+        return new SearchParameterHandler(deepClone(this.params));
     }
 }
 

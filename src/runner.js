@@ -2,11 +2,14 @@ const config = require('./config');
 const {Builder, By, until} = require('selenium-webdriver');
 const {sleep, getBaseUrl} = require('./utils');
 const {logger} = require('./logging/logger');
+const getSearchParameterCode = require('./browser/getSearchParameterCode');
 const getSearchReflectionCode = require('./browser/getSearchReflectionCode');
 const generatePayloads = require('./payloads/generatePayloads');
-const generateRequestCombinations = require('./requests/generateRequestCombinations');
+const RequestTemplateBuilder = require('./requests/RequestTemplateBuilder');
+const {parameterTypes} = require('./constents');
 
 const searchForReflectionsCode = getSearchReflectionCode(config.searchKey);
+const searchForParamsCode = getSearchParameterCode();
 
 async function setCookies({driver, cookies, requestUrl}) {
     if (cookies && cookies.length) {
@@ -57,7 +60,7 @@ async function testPayload({driver, params, requestUrl, payload}) {
     return !!assertResult;
 }
 
-async function testUrl({driver, params, setProxyMods, combination}) {
+async function testUrl({driver, params, setProxyMods, template, combination}) {
     const {
         url: refectionRequestUrl,
         mods: refectionMods,
@@ -77,6 +80,20 @@ async function testUrl({driver, params, setProxyMods, combination}) {
         await sleep(10);
         reflectionResult = await driver.executeScript(searchForReflectionsCode);
         (reflectionResult.logs || []).forEach(logger.log);
+
+        if (params.searchParams) {
+            const domParameters = await driver.executeScript(searchForParamsCode);
+            template.addParameters([
+                ...domParameters.body.map(data => ({
+                    ...data,
+                    type: parameterTypes.BODY,
+                })),
+                ...domParameters.query.map(data => ({
+                    ...data,
+                    type: parameterTypes.QUERY,
+                })),
+            ]);
+        }
 
         if (reflectionResult.reflections.length) {
             break;
@@ -107,26 +124,36 @@ async function runner({params, setProxyMods}) {
         await params.urls.reduce(async (preRawUrlsPromise, rawUrl) => {
             await preRawUrlsPromise;
 
-            const combinations = generateRequestCombinations({params, rawUrl});
-            if (!combinations.length) {
+            const template = new RequestTemplateBuilder({
+                rawUrl,
+                proxyBaseUrl: `http://localhost:${params.proxyPort}`,
+                method: params.method,
+                body: params.body,
+                headers: params.headers,
+                cookies: params.cookies,
+                forceBrowserCookies: params.forceBrowserCookies
+            });
+            if (!template.requestCombinations.length) {
                 logger.warn('no combinations to test for:', rawUrl);
-                return;
             }
 
-            await combinations.reduce(async (preCombinationPromise, combination) => {
-                if (await preCombinationPromise && !params.allParams) {
-                    return true;
-                }
+            for (let i = 0; i < template.requestCombinations.length; i++) {
+                const combination = template.requestCombinations[i];
                 if (!driver) {
                     driver = await new Builder().forBrowser('firefox').build();
                 }
+                let foundVulnerability = false;
                 try {
-                    return testUrl({driver, params, setProxyMods, combination})
+                    foundVulnerability = await testUrl({
+                        driver, params, setProxyMods, template, combination,
+                    })
                 } catch (e) {
                     logger.error('checking page error:', e);
-                    return false;
                 }
-            }, Promise.resolve(false));
+                if (foundVulnerability && !params.allParams) {
+                    return true;
+                }
+            }
         }, Promise.resolve());
     } finally {
         if (driver) {

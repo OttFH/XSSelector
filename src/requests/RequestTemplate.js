@@ -1,19 +1,9 @@
-const PathParameterHandler = require('./PathParameterHandler');
-const SearchParameterHandler = require('./SearchParameterHandler');
 const RequestModifications = require('../proxy/RequestModifications');
-const RequestCombination = require('./RequestCombination');
 const {ifTruthy, removeUndefined} = require('../utils');
 const {httpMethods, parameterTypes} = require('../constents');
 
 function isSendBodyHttpMethod(method) {
     return [httpMethods.POST, httpMethods.PUT, httpMethods.DELETE].includes(method);
-}
-
-function trimStart(text, toRemove) {
-    if (text.startsWith(toRemove)) {
-        text = text.substr(toRemove.length);
-    }
-    return text;
 }
 
 function randomText(length) {
@@ -25,38 +15,24 @@ function randomText(length) {
 }
 
 class RequestTemplate {
-    constructor({rawUrl, proxyBaseUrl, method, body, headers, cookies, forceBrowserCookies}) {
-        const {origin, pathname, searchParams, hash} = new URL(rawUrl);
-        this.baseUrl = origin;
+    constructor({
+                    baseUrl,
+                    proxyBaseUrl,
+                    method,
+                    headers,
+                    cookies,
+                    browserCookies,
+                    forceBrowserCookies,
+                    parameters
+                }) {
+        this.baseUrl = baseUrl;
         this.proxyBaseUrl = proxyBaseUrl;
         this.method = method;
-        this.headers = headers || {};
-        this.cookies = (cookies || []).join(';');
-        this.browserCookies = (cookies || []).map(cookie => cookie.split('=')).map(([name, value]) => ({
-            name,
-            value,
-        }));
+        this.headers = headers;
+        this.cookies = cookies;
+        this.browserCookies = browserCookies;
         this.forceBrowserCookies = forceBrowserCookies;
-        this.parameter = {
-            [parameterTypes.PATH]: new PathParameterHandler(trimStart(pathname, '/')),
-            [parameterTypes.QUERY]: new SearchParameterHandler(searchParams),
-            [parameterTypes.HASH]: new SearchParameterHandler(trimStart(hash, '#')),
-            [parameterTypes.BODY]: new SearchParameterHandler(body),
-        };
-    }
-
-    generateCombinations() {
-        return Object.entries(this.parameter)
-            .filter(([parameterType]) => isSendBodyHttpMethod(this.method) || parameterType !== parameterTypes.BODY)
-            .map(([parameterType, parameter]) => {
-                return Array(parameter.length).fill(true)
-                    .map((_, index) => new RequestCombination({
-                        type: parameterType,
-                        index,
-                        template: this,
-                    }));
-            })
-            .reduce((all, array) => all.concat(array));
+        this.parameters = parameters;
     }
 
     generateRequest({type, index, value}) {
@@ -65,8 +41,9 @@ class RequestTemplate {
             [parameterTypes.QUERY]: query,
             [parameterTypes.HASH]: hash,
             [parameterTypes.BODY]: body,
-        } = Object.entries(this.parameter).reduce((all, [parameterType, parameter]) => {
-            all[parameterType] = parameter.generateModified(index, value, parameterType === type);
+        } = Object.entries(this.parameters).reduce((all, [parameterType, parameter]) => {
+            all[parameterType] = parameterType === type ?
+                parameter.generateModified(index, value) : parameter.generate();
             return all;
         }, {});
 

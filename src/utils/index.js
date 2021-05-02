@@ -29,10 +29,15 @@ function removeUndefined(obj) {
     return obj;
 }
 
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
 module.exports = {
     sleep,
     callFunctionCode,
     getBaseUrl,
     ifTruthy,
     removeUndefined,
+    deepClone,
 };
