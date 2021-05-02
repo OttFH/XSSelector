@@ -1,4 +1,4 @@
-const logLevels = require('../logging/logLevels');
+const {logLevels} = require('../constents');
 
 let logLevel = logLevels.WARN;
 

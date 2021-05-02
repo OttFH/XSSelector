@@ -1,25 +1,8 @@
 const Arg = require('./arg');
-const logLevels = require('../logging/logLevels');
+const {logLevels, httpMethods, argNames} = require('../constents');
 
+const methodOptions = Object.keys(httpMethods).map(method => method.toLowerCase()).join(', ');
 const loggingOptions = Object.keys(logLevels).map(level => level.toLowerCase()).join(', ');
-
-const argNames = {
-    HELP: 'help',
-    URLS: 'urls',
-    URLS_FILE: 'urls-file',
-    CODE_MODE: 'code',
-    ALL_PARAMS: 'all-params',
-    ALL_PAYLOADS: 'all-payloads',
-    COOKIE: 'cookie',
-    PARAMS: 'params',
-    CRAWL: 'crawl',
-    CRAWL_DEPTH: 'crawl-depth',
-    LOG_LEVEL: 'log-level',
-    GENERATE_SEARCH_KEY: 'gen-key',
-    SHOW_BROWSER: 'show-browser',
-    DETECTING_RETRIES: 'retries',
-    DETECTING_RETRY_DELAY: 'retry-delay',
-}
 
 const argTypes = [
     new Arg({
@@ -55,11 +38,33 @@ const argTypes = [
         description: 'try all generated payloads an url even if a vulnerable payload is found.',
     }),
     new Arg({
+        shortName: 'X',
+        longName: argNames.METHOD,
+        defaultValue: httpMethods.GET,
+        description: `change the HTTP method for the requests. options: ${methodOptions}.`,
+    }),
+    new Arg({
+        longName: argNames.BODY,
+        valueType: 'string',
+        description: 'the body that is used as request body. FORMAT',
+    }),
+    new Arg({
+        shortName: 'h',
+        longName: argNames.HEADER,
+        defaultValue: 'string',
+        description: 'a header to send. Use multiple times for multiple headers. Format: --header "name" "value"',
+        isHierarchical: true,
+    }),
+    new Arg({
         shortName: 'c',
         longName: argNames.COOKIE,
         defaultValue: 'string',
-        description: 'a cookie to use. Use multiple times for multiple cookies. Format: --cookie "cookie-name" "cookie-value"',
-        isHierarchical: true
+        description: 'a cookie to use. Use multiple times for multiple cookies. Format: --cookie "name=value"',
+    }),
+    new Arg({
+        longName: argNames.USE_BROWSER_COOKIE,
+        defaultValue: false,
+        description: 'always sets cookies within the browser. Otherwise may set cookie only via internal proxy.',
     }),
     new Arg({
         longName: argNames.PARAMS,
@@ -102,6 +107,11 @@ const argTypes = [
         defaultValue: 500,
         description: 'how long to wait between tries for xss to occur. (not implemented yet)',
         // TODO: implement how long to wait between tries for xss to occur
+    }),
+    new Arg({
+        longName: argNames.INTERNAL_PROXY_PORT,
+        defaultValue: 7132,
+        description: 'changes the port of the internal proxy. This proxy is used to modify requests.',
     }),
     new Arg({
         longName: argNames.LOG_LEVEL,

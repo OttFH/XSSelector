@@ -1,4 +1,4 @@
-const {getTriggerCodeForCode} = require("./generators");
+const {getTriggerCodeForCode} = require('./generators');
 
 function htmlHrefAttributePayloads({jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert}) {
     return [{

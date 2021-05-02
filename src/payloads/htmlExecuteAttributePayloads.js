@@ -1,4 +1,4 @@
-const {getTriggerCodeForCode} = require("./generators");
+const {getTriggerCodeForCode} = require('./generators');
 
 function htmlExecuteAttributePayloads({reflection, jsCode, scriptTag, imgTag, aTag, pTag, tagTrigger, assert}) {
     return[{

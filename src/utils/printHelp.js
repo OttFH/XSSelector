@@ -11,7 +11,7 @@ function getFormattedNamesText(arg) {
 function getFormattedValueText(arg) {
     return [
         arg.valueType ? `type: ${arg.valueType}` : null,
-        arg.defaultValue ? `default: ${arg.defaultValue}` : null,
+        arg.defaultValue !== undefined ? `default: ${arg.defaultValue}` : null,
     ].filter(Boolean).join(', ');
 }
 
