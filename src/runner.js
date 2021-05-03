@@ -4,12 +4,15 @@ const {sleep, getBaseUrl} = require('./utils');
 const {logger} = require('./logging/logger');
 const getSearchParameterCode = require('./browser/getSearchParameterCode');
 const getSearchReflectionCode = require('./browser/getSearchReflectionCode');
+const getSearchUrlsCode = require('./browser/getSearchUrlsCode');
 const generatePayloads = require('./payloads/generatePayloads');
 const RequestTemplateBuilder = require('./requests/RequestTemplateBuilder');
-const {parameterTypes} = require('./constents');
+const addRequestTemplateBuilderFromDomUrls = require('./addRequestTemplateBuilderFromDomUrls');
+const {parameterTypes, httpMethods} = require('./constents');
 
 const searchForReflectionsCode = getSearchReflectionCode(config.searchKey);
 const searchForParamsCode = getSearchParameterCode();
+const searchUrlsCodeCode = getSearchUrlsCode();
 
 async function setCookies({driver, cookies, requestUrl}) {
     if (cookies && cookies.length) {
@@ -48,29 +51,49 @@ async function testPayload({driver, params, requestUrl, payload}) {
 
         assertResult = await driver.executeScript(payload.assert);
         if (assertResult) {
-            break;
+            return true;
         }
     } while (startMillis + params.detectionTimeout > Date.now()) ;
 
-    if (assertResult) {
-        logger.vuln('payload:', payload.payload);
-    } else {
-        logger.info('assertion was falsy');
-    }
-    return !!assertResult;
+    return false;
 }
 
-async function testUrl({driver, params, setProxyMods, template, combination}) {
-    const {
-        url: refectionRequestUrl,
-        mods: refectionMods,
-        browserCookies: refectionCookies
-    } = combination.generateRequest(config.searchKey);
-    logger.info('check reflections of:', refectionRequestUrl);
+function testPayloads({driver, params, setProxyMods, payloads, combination}) {
+    return payloads.reduce(async (promise, payload) => {
+        if (await promise && !params.allPayloads) {
+            return true;
+        }
+        const {
+            url: requestUrl,
+            mods,
+            browserCookies
+        } = combination.generateRequest(payload.payload);
+        setProxyMods(mods);
+        await setCookies({driver, cookies: browserCookies, requestUrl: requestUrl});
+        const hasVulnerability = await testPayload({driver, params, requestUrl: requestUrl, payload});
 
-    setProxyMods(refectionMods);
-    await setCookies({driver, cookies: refectionCookies, requestUrl: refectionRequestUrl});
-    if (!await request({driver, url: refectionRequestUrl})) {
+        if (hasVulnerability) {
+            const method = mods ? mods.method : httpMethods.GET;
+            const targetUrl = mods ? mods.target + mods.targetUrl : requestUrl;
+            const body = mods ? mods.body : '';
+            logger.vuln(method, targetUrl, body);
+        } else {
+            logger.info('assertion was falsy');
+        }
+        return hasVulnerability;
+    }, Promise.resolve(false));
+}
+
+async function testUrl({driver, params, setProxyMods, templates, template, combination}) {
+    const {
+        url: requestUrl,
+        mods,
+        browserCookies
+    } = combination.generateRequest(config.searchKey);
+    logger.info('check reflections of:', requestUrl);
+    setProxyMods(mods);
+    await setCookies({driver, cookies: browserCookies, requestUrl: requestUrl});
+    if (!await request({driver, url: requestUrl})) {
         return false;
     }
 
@@ -94,6 +117,12 @@ async function testUrl({driver, params, setProxyMods, template, combination}) {
                 })),
             ]);
         }
+        if (params.crawlDepth > 0 && params.crawlDepth > template.crawlDepth) {
+            const domUrls = await driver.executeScript(searchUrlsCodeCode);
+            const baseTargetUrl = mods ? mods.target : new URL(requestUrl).origin;
+            addRequestTemplateBuilderFromDomUrls(params, templates, baseTargetUrl,
+                domUrls, template.crawlDepth + 1, mods && mods.proxyParameter);
+        }
 
         if (reflectionResult.reflections.length) {
             break;
@@ -103,58 +132,46 @@ async function testUrl({driver, params, setProxyMods, template, combination}) {
     const payloads = generatePayloads(reflectionResult.reflections);
     logger.info('payloads generated:', payloads.length);
 
-    return payloads.reduce(async (promise, payload) => {
-        if (await promise && !params.allPayloads) {
-            return true;
-        }
-        const {
-            url: payloadRequestUrl,
-            mods,
-            browserCookies: payloadCookies
-        } = combination.generateRequest(payload.payload);
-        setProxyMods(mods);
-        await setCookies({driver, cookies: payloadCookies, requestUrl: payloadRequestUrl});
-        return testPayload({driver, params, requestUrl: payloadRequestUrl, payload});
-    }, Promise.resolve(false));
+    return testPayloads({driver, params, setProxyMods, payloads, combination});
 }
 
 async function runner({params, setProxyMods}) {
     let driver = null;
     try {
-        await params.urls.reduce(async (preRawUrlsPromise, rawUrl) => {
-            await preRawUrlsPromise;
-
-            const template = new RequestTemplateBuilder({
-                rawUrl,
-                proxyBaseUrl: `http://localhost:${params.proxyPort}`,
-                method: params.method,
-                body: params.body,
-                headers: params.headers,
-                cookies: params.cookies,
-                forceBrowserCookies: params.forceBrowserCookies
-            });
+        const templates = params.urls.map(url => new RequestTemplateBuilder({
+            rawUrl: url,
+            proxyBaseUrl: `http://localhost:${params.proxyPort}`,
+            method: params.method,
+            body: params.body,
+            headers: params.headers,
+            cookies: params.cookies,
+            forceBrowserCookies: params.forceBrowserCookies,
+            crawlDepth: 0,
+        }));
+        for (let i = 0; i < templates.length; i++) {
+            const template = templates[i];
             if (!template.requestCombinations.length) {
                 logger.warn('no combinations to test for:', rawUrl);
             }
 
-            for (let i = 0; i < template.requestCombinations.length; i++) {
-                const combination = template.requestCombinations[i];
+            for (let j = 0; j < template.requestCombinations.length; j++) {
+                const combination = template.requestCombinations[j];
                 if (!driver) {
                     driver = await new Builder().forBrowser('firefox').build();
                 }
                 let foundVulnerability = false;
                 try {
                     foundVulnerability = await testUrl({
-                        driver, params, setProxyMods, template, combination,
-                    })
+                        driver, params, setProxyMods, templates, template, combination,
+                    });
                 } catch (e) {
                     logger.error('checking page error:', e);
                 }
                 if (foundVulnerability && !params.allParams) {
-                    return true;
+                    break;
                 }
             }
-        }, Promise.resolve());
+        }
     } finally {
         if (driver) {
             await driver.quit();

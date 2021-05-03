@@ -74,14 +74,12 @@ const argTypes = [
     new Arg({
         longName: argNames.CRAWL,
         defaultValue: false,
-        description: 'search for more urls to check. (not implemented yet)',
-        // TODO: implement search for more urls to check
+        description: 'search for more URLs to check.',
     }),
     new Arg({
         longName: argNames.CRAWL_DEPTH,
         defaultValue: 8,
-        description: 'maximum depth to crawl. (not implemented yet)',
-        // TODO: implement maximum depth to crawl
+        description: 'maximum depth to crawl.',
     }),
     new Arg({
         longName: argNames.GENERATE_SEARCH_KEY,

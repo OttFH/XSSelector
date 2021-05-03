@@ -47,7 +47,8 @@ class RequestTemplate {
             return all;
         }, {});
 
-        const requestQuery = `?${query}${ifTruthy(query, `&`, `proxyId=${randomText(10)}`)}`;
+        const proxyParameter = `proxyId=${randomText(10)}`;
+        const requestQuery = `?${query}${ifTruthy(query, `&`, proxyParameter)}`;
         const targetUrl = `/${path}${ifTruthy(query, '?')}${ifTruthy(hash, '#')}`;
         const requestUrl = `/${path}${requestQuery}${ifTruthy(hash, '#')}`;
 
@@ -70,6 +71,7 @@ class RequestTemplate {
                 requestUrl,
                 body: isSendBody ? body : undefined,
                 headers,
+                proxyParameter,
             }),
             browserCookies: this.forceBrowserCookies ? this.browserCookies : null,
         } : {

@@ -18,8 +18,10 @@ function trimStart(text, toRemove) {
 }
 
 class RequestTemplateBuilder {
-    constructor({rawUrl, proxyBaseUrl, method, body, headers, cookies, forceBrowserCookies}) {
+    constructor({rawUrl, proxyBaseUrl, method, body, headers, cookies, forceBrowserCookies, crawlDepth}) {
         const {origin, pathname, searchParams, hash} = new URL(rawUrl);
+        this.rawUrl = rawUrl;
+        this.rawBody = body;
         this.baseUrl = origin;
         this.proxyBaseUrl = proxyBaseUrl;
         this.method = method;
@@ -30,6 +32,7 @@ class RequestTemplateBuilder {
             value,
         }));
         this.forceBrowserCookies = forceBrowserCookies;
+        this.crawlDepth = crawlDepth;
         this.parameters = {
             [parameterTypes.PATH]: PathParameterHandler.parse(trimStart(pathname, '/')),
             [parameterTypes.QUERY]: SearchParameterHandler.parse(searchParams),
@@ -38,6 +41,16 @@ class RequestTemplateBuilder {
         };
         this._requestCombinations = [this.generateRequestCombination(null, 0)];
         this._requestCombinations.push(...this.generateCombinations());
+    }
+
+    equals(other) {
+        return this.rawUrl === other.rawUrl &&
+            this.rawBody === other.rawBody &&
+            this.proxyBaseUrl === other.proxyBaseUrl &&
+            this.method === other.method &&
+            JSON.stringify(this.headers) === JSON.stringify(other.headers) &&
+            JSON.stringify(this.cookies) === JSON.stringify(other.cookies) &&
+            this.forceBrowserCookies === other.forceBrowserCookies;
     }
 
     cloneParameters() {

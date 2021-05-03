@@ -57,7 +57,7 @@ function startProxy(port) {
 
     return function (mods) {
         currentMods = mods;
-        latestTarget = mods && mods.target;
+        if (mods) latestTarget = mods.target;
     }
 }
 
