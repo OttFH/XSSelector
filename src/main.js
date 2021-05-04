@@ -3,8 +3,6 @@ const printHelp = require('./utils/printHelp');
 const runner = require('./runner');
 const startProxy = require('./proxy');
 
-// TODO: add code mode
-// TODO: add crawl mode
 // TODO: update README
 // TODO: optimize combination testing (some may have been tested already)
 // TODO: fix starting with npm
@@ -16,13 +14,13 @@ async function main({params}) {
         return;
     }
 
-    if (!params.urls.length) {
-        logger.warn('no urls to check.');
+    if (!params.urls.length && !params.codeModePaths.length) {
+        logger.warn('no urls or code mode files to check.');
         return;
     }
 
-    const setProxyMods = startProxy(params.proxyPort);
-    await runner({params, setProxyMods});
+    const proxy = startProxy(params.proxyPort);
+    await runner({params, proxy});
 }
 
 module.exports = main;

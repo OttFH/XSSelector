@@ -43,22 +43,39 @@ function requestHandler(req, res, proxy, latestTarget, mods) {
     }
 }
 
-function startProxy(port) {
-    let currentMods = null;
-    let latestTarget = null;
-    const proxy = httpProxy.createProxyServer({});
-    const server = http.createServer((req, res,) => {
-        if (requestHandler(req, res, proxy, latestTarget, currentMods)) {
-            currentMods = null;
-        }
-    });
-
-    server.listen(port);
-
-    return function (mods) {
-        currentMods = mods;
-        if (mods) latestTarget = mods.target;
+class InternalProxy {
+    constructor() {
+        this._currentMods = null;
+        this.disableMods = true;
+        this.latestTarget = null;
     }
+
+    start(port) {
+        const proxy = httpProxy.createProxyServer({});
+        const server = http.createServer((req, res,) => {
+            if (requestHandler(req, res, proxy, this.latestTarget, this.disableMods ? null : this.currentMods)) {
+                this.disableMods = true;
+            }
+        });
+
+        server.listen(port);
+    }
+
+    get currentMods() {
+        return this._currentMods;
+    }
+
+    set currentMods(mods) {
+        this._currentMods = mods;
+        this.disableMods = false;
+        if (mods) this.latestTarget = mods.target;
+    }
+}
+
+function startProxy(port) {
+    const proxy = new InternalProxy();
+    proxy.start(port);
+    return proxy;
 }
 
 module.exports = startProxy;

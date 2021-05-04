@@ -33,6 +33,24 @@ function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
 
+function trimStart(text, toRemove) {
+    if (text.startsWith(toRemove)) {
+        text = text.substr(toRemove.length);
+    }
+    return text;
+}
+
+/**
+ * Parse cookie strings to the format the browser can use.
+ * @param cookies {string[]} array of cookies string with the format: <name>=<value>
+ */
+function parseBrowserCookies(cookies) {
+    return (cookies || []).map(cookie => cookie.split('=')).map(([name, value]) => ({
+        name,
+        value,
+    }));
+}
+
 module.exports = {
     sleep,
     callFunctionCode,
@@ -40,4 +58,6 @@ module.exports = {
     ifTruthy,
     removeUndefined,
     deepClone,
+    trimStart,
+    parseBrowserCookies,
 };

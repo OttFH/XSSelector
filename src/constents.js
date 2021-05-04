@@ -51,10 +51,18 @@ const parameterTypes = {
     HASH: 'hash',
 };
 
+const codeModeStepTypes = {
+    BROWSER_REQUEST: 'browser_request',
+    BROWSER_SCRIPT: 'browser_script',
+    AXIOS_REQUEST: 'axion_request',
+    RESULT: 'result',
+};
+
 module.exports = {
     logLevels,
     argNames,
     reflectionTypes,
     httpMethods,
     parameterTypes,
+    codeModeStepTypes,
 };

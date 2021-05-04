@@ -24,8 +24,7 @@ const argTypes = [
     new Arg({
         longName: argNames.CODE_MODE,
         defaultValue: 'string',
-        description: 'path of a files with code to execute. Check out README for more information.',
-        // TODO: implement code mode
+        description: 'path of files with code to execute. Check out README for more information.',
     }),
     new Arg({
         longName: argNames.ALL_PARAMS,

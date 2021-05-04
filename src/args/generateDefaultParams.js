@@ -5,6 +5,7 @@ function generateDefaultParams() {
     return {
         help: false,
         urls: [],
+        codeModePaths: [],
         allParams: getArgType(argNames.ALL_PARAMS).defaultValue,
         allPayloads: getArgType(argNames.ALL_PAYLOADS).defaultValue,
         method: getArgType(argNames.METHOD).defaultValue,

@@ -3,34 +3,24 @@ const SearchParameterHandler = require('./SearchParameterHandler');
 const RequestCombination = require('./RequestCombination');
 const RequestTemplate = require('./RequestTemplate');
 const config = require('../config');
-const {deepClone} = require('../utils');
+const {deepClone, trimStart, parseBrowserCookies} = require('../utils');
 const {httpMethods, parameterTypes} = require('../constents');
 
 function isSendBodyHttpMethod(method) {
     return [httpMethods.POST, httpMethods.PUT, httpMethods.DELETE].includes(method);
 }
 
-function trimStart(text, toRemove) {
-    if (text.startsWith(toRemove)) {
-        text = text.substr(toRemove.length);
-    }
-    return text;
-}
-
 class RequestTemplateBuilder {
-    constructor({rawUrl, proxyBaseUrl, method, body, headers, cookies, forceBrowserCookies, crawlDepth}) {
+    constructor({rawUrl, proxyPort, method, body, headers, cookies, forceBrowserCookies, crawlDepth}) {
         const {origin, pathname, searchParams, hash} = new URL(rawUrl);
-        this.rawUrl = rawUrl;
+        this.source = rawUrl;
         this.rawBody = body;
         this.baseUrl = origin;
-        this.proxyBaseUrl = proxyBaseUrl;
+        this.proxyPort = proxyPort;
         this.method = method;
         this.headers = headers || {};
         this.cookies = (cookies || []).join(';');
-        this.browserCookies = (cookies || []).map(cookie => cookie.split('=')).map(([name, value]) => ({
-            name,
-            value,
-        }));
+        this.browserCookies = parseBrowserCookies(cookies);
         this.forceBrowserCookies = forceBrowserCookies;
         this.crawlDepth = crawlDepth;
         this.parameters = {
@@ -44,9 +34,9 @@ class RequestTemplateBuilder {
     }
 
     equals(other) {
-        return this.rawUrl === other.rawUrl &&
+        return this.source === other.source &&
             this.rawBody === other.rawBody &&
-            this.proxyBaseUrl === other.proxyBaseUrl &&
+            this.proxyPort === other.proxyPort &&
             this.method === other.method &&
             JSON.stringify(this.headers) === JSON.stringify(other.headers) &&
             JSON.stringify(this.cookies) === JSON.stringify(other.cookies) &&
@@ -62,7 +52,7 @@ class RequestTemplateBuilder {
     generateTemplate(overrideMethod) {
         return new RequestTemplate({
             baseUrl: this.baseUrl,
-            proxyBaseUrl: this.proxyBaseUrl,
+            proxyPort: this.proxyPort,
             method: overrideMethod || this.method,
             headers: this.headers,
             cookies: deepClone(this.cookies),

@@ -18,7 +18,7 @@ function addRequestTemplateBuilderFromDomUrls(params, builders, baseTargetUrl, d
         const rawUrl = url.origin + url.pathname + search + hash;
         return new RequestTemplateBuilder({
             rawUrl,
-            proxyBaseUrl: `http://localhost:${params.proxyPort}`,
+            proxyPort: params.proxyPort,
             method: domUrl.method,
             body,
             headers: params.headers,
