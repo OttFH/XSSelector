@@ -114,6 +114,7 @@ async function loadCommandLineArgs() {
             logger.warn(`"${args[0]}" is not a valid value for ${argNames.INTERNAL_PROXY_PORT}, needs to be a integer.`);
         }
     });
+    handleArgName(grouped, argNames.USE_BROWSER_COOKIE, () => params.headless = false); // TODO: handle false values
     handleArgName(grouped, argNames.LOG_LEVEL, args => {
         if (args.length !== 1) {
             logger.warn(`${argNames.LOG_LEVEL} needs a single value, you provided: ${args.length}`);

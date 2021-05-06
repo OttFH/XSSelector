@@ -89,8 +89,7 @@ const argTypes = [
     new Arg({
         longName: argNames.SHOW_BROWSER,
         defaultValue: false,
-        description: 'show browser window. (not implemented yet)',
-        // TODO: implement (not) showing browser
+        description: 'show browser window.',
     }),
     new Arg({
         longName: argNames.DETECTING_TIMEOUT,

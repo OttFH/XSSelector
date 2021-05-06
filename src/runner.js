@@ -1,5 +1,6 @@
 const config = require('./config');
 const {Builder, By, until} = require('selenium-webdriver');
+const firefox = require('selenium-webdriver/firefox');
 const {sleep} = require('./utils');
 const {logger} = require('./logging/logger');
 const getSearchParameterCode = require('./browser/getSearchParameterCode');
@@ -158,7 +159,15 @@ async function runner({params, proxy}) {
             for (let j = 0; j < template.requestCombinations.length; j++) {
                 const steps = template.requestCombinations[j];
                 if (!driver) {
-                    driver = await new Builder().forBrowser('firefox').build();
+                    const firefoxOptions = new firefox.Options().windowSize({
+                        width: 1280,
+                        height: 960,
+                    });
+                    if (params.headless) firefoxOptions.headless();
+                    driver = await new Builder()
+                        .forBrowser('firefox')
+                        .setFirefoxOptions(firefoxOptions)
+                        .build();
                 }
                 let foundVulnerability = false;
                 try {

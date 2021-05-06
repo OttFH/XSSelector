@@ -16,6 +16,7 @@ function generateDefaultParams() {
         searchParams: getArgType(argNames.PARAMS).defaultValue,
         crawlDepth: getArgType(argNames.CRAWL).defaultValue ? getArgType(argNames.CRAWL_DEPTH).defaultValue : 0,
         detectionTimeout: getArgType(argNames.DETECTING_TIMEOUT).defaultValue,
+        headless: !getArgType(argNames.SHOW_BROWSER).defaultValue,
         proxyPort: getArgType(argNames.INTERNAL_PROXY_PORT).defaultValue,
         logLevel: logLevels.WARN,
     };
