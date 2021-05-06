@@ -80,12 +80,12 @@ const argTypes = [
         defaultValue: 8,
         description: 'maximum depth to crawl.',
     }),
-    new Arg({
-        longName: argNames.GENERATE_SEARCH_KEY,
-        defaultValue: false,
-        description: 'generate a search key and not use the one from config. (not implemented yet)',
-        // TODO: implement generate a search key and not use the one from config
-    }),
+    // new Arg({
+    //     longName: argNames.GENERATE_SEARCH_KEY,
+    //     defaultValue: false,
+    //     description: 'generate a search key and not use the one from config. (not implemented yet)',
+    //     // TODO: implement generate a search key and not use the one from config
+    // }),
     new Arg({
         longName: argNames.SHOW_BROWSER,
         defaultValue: false,
