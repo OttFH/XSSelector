@@ -31,15 +31,17 @@ function buildBrowserRequest(params, {
     });
 }
 
-async function runStep({driver, params, proxy, payload, results, createStep}) {
-    const step = await createStep({
-        driver,
-        payload,
-        previousResult: results[results.length - 1],
-        results: [...results],
-    });
-
+async function runStep({driver, params, proxy, payload, results, index, createStep}) {
+    let currentResult = null;
     try {
+        const step = await createStep({
+            driver,
+            payload,
+            index,
+            results: [...results],
+            previousResult: results[results.length - 1],
+        });
+
         switch (step.type) {
             case codeModeStepTypes.BROWSER_REQUEST:
                 const browserRequest = buildBrowserRequest(params, step);
@@ -55,18 +57,15 @@ async function runStep({driver, params, proxy, payload, results, createStep}) {
                 break;
 
             case codeModeStepTypes.BROWSER_SCRIPT:
-                const scriptResult = await driver.executeScript(step.script);
-                results.push(scriptResult);
+                currentResult = await driver.executeScript(step.script);
                 break;
 
-
             case codeModeStepTypes.AXIOS_REQUEST:
-                const response = await axios(step.config);
-                results.push(response);
+                currentResult = await axios(step.config);
                 break;
 
             case codeModeStepTypes.RESULT:
-                results.push(step.result);
+                currentResult = step.result;
                 break;
 
             default:
@@ -75,7 +74,9 @@ async function runStep({driver, params, proxy, payload, results, createStep}) {
         }
     } catch (e) {
         logger.warn(`Code mode error: ${e.message}`);
-        results.push(e);
+        currentResult = e;
+    } finally {
+        results.push(currentResult);
     }
 }
 

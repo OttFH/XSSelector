@@ -34,11 +34,11 @@ async function request({driver, params, proxy, payload, steps}) {
         await driver.get(requestUrl);
     } else { // code mode
         const results = [];
-        await steps.reduce(async (promise, createStep) => {
+        await steps.reduce(async (promise, createStep, index) => {
             await promise;
 
             return runStep({
-                driver, params, proxy, payload, results, createStep,
+                driver, params, proxy, payload, results, index, createStep,
             });
         }, Promise.resolve());
     }
