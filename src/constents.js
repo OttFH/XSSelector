@@ -52,10 +52,10 @@ const parameterTypes = {
 };
 
 const codeModeStepTypes = {
-    BROWSER_REQUEST: 'browser_request',
-    BROWSER_SCRIPT: 'browser_script',
-    AXIOS_REQUEST: 'axion_request',
-    RESULT: 'result',
+    BROWSER_REQUEST: 'BROWSER_REQUEST',
+    BROWSER_SCRIPT: 'BROWSER_SCRIPT',
+    AXIOS_REQUEST: 'AXIOS_REQUEST',
+    RESULT: 'RESULT',
 };
 
 module.exports = {
