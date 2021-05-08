@@ -10,7 +10,6 @@ function buildBrowserRequest(params, {
     url,
     method,
     body,
-    contentType = null,
     headers,
     cookies,
     useBrowserCookies,
@@ -29,7 +28,6 @@ function buildBrowserRequest(params, {
         query: trimStart(search, '?'),
         hash: trimStart(hash, '#'),
         body,
-        contentType,
     });
 }
 

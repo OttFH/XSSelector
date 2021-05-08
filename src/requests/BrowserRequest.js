@@ -39,7 +39,6 @@ class BrowserRequest {
                      query,
                      hash,
                      body,
-                     contentType,
                  }) {
         const proxyParameter = `proxyId=${randomText(10)}`;
         const requestQuery = `?${query}${ifTruthy(query, `&`, proxyParameter)}`;
@@ -53,7 +52,7 @@ class BrowserRequest {
             cookie: !forceBrowserCookies && sendRequestViaProxy && cookies || undefined,
         });
         if (isSendBody) {
-            requestHeaders['Content-Type'] = contentType || 'application/x-www-form-urlencoded';
+            requestHeaders['Content-Type'] = requestHeaders['Content-Type'] || 'application/x-www-form-urlencoded';
             requestHeaders['Content-Length'] = Buffer.byteLength(body);
         }
         return new BrowserRequest(sendRequestViaProxy || requestHeaders.cookie ? {
